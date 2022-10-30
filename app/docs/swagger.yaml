@@ -1,0 +1,162 @@
+basePath: /api
+definitions:
+  models.CurrencyPair:
+    properties:
+      buy:
+        type: string
+      marketID:
+        type: integer
+      pair:
+        type: string
+      sell:
+        type: string
+      volume:
+        type: string
+    type: object
+  models.P2PPair:
+    properties:
+      buy:
+        type: string
+      firstAsset:
+        type: string
+      marketId:
+        type: integer
+      payType:
+        type: string
+      secondAsset:
+        type: string
+      sell:
+        type: string
+    type: object
+host: localhost:5050
+info:
+  contact: {}
+  description: This is a docs for api
+  title: Exchange-parser-server
+  version: "1.0"
+paths:
+  /v1/p2p/markets/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all P2P markets
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: Get all P2P markets
+      tags:
+      - P2P
+  /v1/p2p/pair:
+    get:
+      consumes:
+      - application/json
+      description: Get p2p orders from all markets
+      parameters:
+      - description: Name of P2P pair
+        example: USDT/P2PRUB
+        in: query
+        name: pair
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.P2PPair'
+            type: array
+      summary: Get
+      tags:
+      - P2P
+  /v1/p2p/pairs/{marketP2PID}:
+    get:
+      consumes:
+      - application/json
+      description: Get all orders by market id
+      parameters:
+      - description: Name of SPOT pair
+        in: path
+        name: marketP2PID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.P2PPair'
+            type: array
+      summary: Get all
+      tags:
+      - P2P
+  /v1/spot/markets/all:
+    get:
+      consumes:
+      - application/json
+      description: Get all SPOT markets
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: integer
+      summary: Get all
+      tags:
+      - SPOT
+  /v1/spot/pair:
+    get:
+      consumes:
+      - application/json
+      description: Get currency pair from all SPOT markets
+      parameters:
+      - description: Name of SPOT pair
+        example: BTCUSDT
+        in: query
+        name: pair
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.P2PPair'
+            type: array
+      summary: Get currency pair
+      tags:
+      - SPOT
+  /v1/spot/pairs/{marketID}:
+    get:
+      consumes:
+      - application/json
+      description: Get all SPOT pairs by market id
+      parameters:
+      - description: SPOT market id
+        in: path
+        name: marketID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.CurrencyPair'
+            type: array
+      summary: Get all
+      tags:
+      - SPOT
+swagger: "2.0"

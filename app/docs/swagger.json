@@ -1,0 +1,246 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a docs for api",
+        "title": "Exchange-parser-server",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:5050",
+    "basePath": "/api",
+    "paths": {
+        "/v1/p2p/markets/all": {
+            "get": {
+                "description": "Get all P2P markets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "P2P"
+                ],
+                "summary": "Get all P2P markets",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/p2p/pair": {
+            "get": {
+                "description": "Get p2p orders from all markets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "P2P"
+                ],
+                "summary": "Get",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "USDT/P2PRUB",
+                        "description": "Name of P2P pair",
+                        "name": "pair",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.P2PPair"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/p2p/pairs/{marketP2PID}": {
+            "get": {
+                "description": "Get all orders by market id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "P2P"
+                ],
+                "summary": "Get all",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Name of SPOT pair",
+                        "name": "marketP2PID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.P2PPair"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/spot/markets/all": {
+            "get": {
+                "description": "Get all SPOT markets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SPOT"
+                ],
+                "summary": "Get all",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/spot/pair": {
+            "get": {
+                "description": "Get currency pair from all SPOT markets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SPOT"
+                ],
+                "summary": "Get currency pair",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "BTCUSDT",
+                        "description": "Name of SPOT pair",
+                        "name": "pair",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.P2PPair"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/spot/pairs/{marketID}": {
+            "get": {
+                "description": "Get all SPOT pairs by market id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "SPOT"
+                ],
+                "summary": "Get all",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "SPOT market id",
+                        "name": "marketID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.CurrencyPair"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.CurrencyPair": {
+            "type": "object",
+            "properties": {
+                "buy": {
+                    "type": "string"
+                },
+                "marketID": {
+                    "type": "integer"
+                },
+                "pair": {
+                    "type": "string"
+                },
+                "sell": {
+                    "type": "string"
+                },
+                "volume": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.P2PPair": {
+            "type": "object",
+            "properties": {
+                "buy": {
+                    "type": "string"
+                },
+                "firstAsset": {
+                    "type": "string"
+                },
+                "marketId": {
+                    "type": "integer"
+                },
+                "payType": {
+                    "type": "string"
+                },
+                "secondAsset": {
+                    "type": "string"
+                },
+                "sell": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}
