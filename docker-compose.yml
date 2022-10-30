@@ -1,0 +1,19 @@
+version: "3.8"
+services:
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    env_file:
+      - .env
+  parser:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - redis
+    ports:
+    - ${BACKEND_PORT}:${BACKEND_PORT}
+    env_file:
+      - .env
