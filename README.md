@@ -38,14 +38,14 @@ Start Docker Compose:
 2. Edit .env.example to .env
 3. Set your settings on .env file
 4. Start docker-compose file:
-bash
+```bash
 docker-compose up -d
-
+```
 <a name="docs"></a>
 
 ## Docs
 
 Upgrade swagger documentation
-
-bash
+```bash
 swag init -g app/cmd -o app/docs
+```
