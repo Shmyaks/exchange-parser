@@ -33,7 +33,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "integer"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/markets.Market"
+                            }
                         }
                     }
                 }
@@ -127,7 +130,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "integer"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/markets.Market"
+                            }
                         }
                     }
                 }
@@ -206,6 +212,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "markets.Market": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.CurrencyPair": {
             "type": "object",
             "properties": {

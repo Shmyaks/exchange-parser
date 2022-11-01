@@ -1,5 +1,12 @@
 basePath: /api
 definitions:
+  markets.Market:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   models.CurrencyPair:
     properties:
       buy:
@@ -46,7 +53,9 @@ paths:
         "200":
           description: OK
           schema:
-            type: integer
+            items:
+              $ref: '#/definitions/markets.Market'
+            type: array
       summary: Get all P2P markets
       tags:
       - P2P
@@ -108,7 +117,9 @@ paths:
         "200":
           description: OK
           schema:
-            type: integer
+            items:
+              $ref: '#/definitions/markets.Market'
+            type: array
       summary: Get all
       tags:
       - SPOT
