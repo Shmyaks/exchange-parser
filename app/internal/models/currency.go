@@ -20,6 +20,8 @@ type BaseCurrencyPair struct {
 	MarketID    markets.SPOTMarket `json:"marketID"`
 }
 
+
+
 // NewBaseCurrencyPair fabric
 func NewBaseCurrencyPair(firstAsset CryptoCurrency, secondAsset CryptoCurrency, marketID markets.SPOTMarket) *BaseCurrencyPair {
 	return &BaseCurrencyPair{FirstAsset: firstAsset, SecondAsset: secondAsset, MarketID: marketID}

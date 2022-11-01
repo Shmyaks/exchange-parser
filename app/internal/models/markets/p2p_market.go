@@ -5,7 +5,7 @@ type P2PMarket uint16
 
 // BinanceP2P, ... -> ENUM
 const (
-	BinanceP2P P2PMarket = iota
+	BinanceP2P P2PMarket = iota + 1
 	BybitP2P
 	HuobiP2P
 	OkxP2P

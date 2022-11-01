@@ -19,7 +19,7 @@ type P2PRepository struct {
 func NewP2PRepository(P2PDatas []data.P2P, redisConnection redis.Connection) *P2PRepository {
 	mpDatas := make([]data.P2P, len(P2PDatas))
 	for _, p2pData := range P2PDatas {
-		mpDatas[*p2pData.GetMarketID()] = p2pData
+		mpDatas[*p2pData.GetMarketID()-1] = p2pData
 	}
 
 	return &P2PRepository{Datas: mpDatas, redisConnection: redisConnection}
@@ -27,10 +27,10 @@ func NewP2PRepository(P2PDatas []data.P2P, redisConnection redis.Connection) *P2
 
 // GetData get P2PData of repository
 func (r *P2PRepository) GetData(m markets.P2PMarket) data.P2P {
-	if len(r.Datas) <= int(m) {
+	if len(r.Datas) <= int(m)-1 {
 		panic("Datas not have this market")
 	}
-	return r.Datas[m]
+	return r.Datas[m-1]
 }
 
 // GetAllFromData method for get P2POrders from Data

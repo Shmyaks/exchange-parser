@@ -31,14 +31,14 @@ func SetupP2PRoute(api fiber.Router, service service.P2PService) {
 // @Tags        P2P
 // @Accept      json
 // @Produce     json
-// @Success     200 {integer} []int
+// @Success     200 {object} []markets.Market
 // @Router      /v1/p2p/markets/all [get]
 func (r *P2PRouter) getAllMarkets(c *fiber.Ctx) error {
-	mp := make(map[markets.P2PMarket]string)
+	p2pMarkets := make([]markets.Market, 0, len(markets.AllP2PMarket))
 	for _, val := range markets.AllP2PMarket {
-		mp[val] = val.GetName()
+		p2pMarkets = append(p2pMarkets, *markets.NewMarket(uint16(val), val.GetName()))
 	}
-	return c.JSON(mp)
+	return c.JSON(p2pMarkets)
 }
 
 // getAllPairs godoc

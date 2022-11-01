@@ -19,7 +19,7 @@ type SPOTRepository struct {
 func NewSPOTRepository(curencyDatas []data.SPOT, redisConnection redis.Connection) *SPOTRepository {
 	mpCurrency := make([]data.SPOT, len(curencyDatas))
 	for _, curencyData := range curencyDatas {
-		mpCurrency[*curencyData.GetMarketID()] = curencyData
+		mpCurrency[*curencyData.GetMarketID()-1] = curencyData
 	}
 
 	return &SPOTRepository{Datas: mpCurrency, redisConnection: redisConnection}
@@ -27,10 +27,10 @@ func NewSPOTRepository(curencyDatas []data.SPOT, redisConnection redis.Connectio
 
 // GetData get spot Data of repository
 func (r *SPOTRepository) GetData(m markets.SPOTMarket) data.SPOT {
-	if len(r.Datas) <= int(m) {
+	if len(r.Datas) <= int(m)-1 {
 		panic("Datas not have this market")
 	}
-	return r.Datas[m]
+	return r.Datas[m-1]
 }
 
 // GetPairNamesFromData method for get P2POrders from Data

@@ -6,7 +6,7 @@ type SPOTMarket uint16
 
 // Binance ... -> ENUM of ExchangeMarket
 const (
-	Binance SPOTMarket = iota
+	Binance SPOTMarket = iota + 1
 	Bybit
 	Huobi
 	Okx

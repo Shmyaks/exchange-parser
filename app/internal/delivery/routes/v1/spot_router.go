@@ -30,14 +30,14 @@ func SetupSpotRoute(api fiber.Router, SPOTService service.SPOTService) {
 // @Tags        SPOT
 // @Accept      json
 // @Produce     json
-// @Success     200 {integer} []int
+// @Success     200 {object} []markets.Market
 // @Router      /v1/spot/markets/all [get]
 func (r *SPOTRouter) getAllMarkets(c *fiber.Ctx) error {
-	mp := make(map[markets.SPOTMarket]string)
+	spotMarkets := make([]markets.Market, 0, len(markets.AllSPOTMarkets))
 	for _, val := range markets.AllSPOTMarkets {
-		mp[val] = val.GetName()
+		spotMarkets = append(spotMarkets, *markets.NewMarket(uint16(val), val.GetName()))
 	}
-	return c.JSON(mp)
+	return c.JSON(spotMarkets)
 }
 
 // getCurrencyAPI godoc
