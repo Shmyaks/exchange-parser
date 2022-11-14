@@ -16,6 +16,85 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/v1/arbitrage/rows": {
+            "get": {
+                "description": "Get currency pair from all SPOT markets",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Arbitrage"
+                ],
+                "summary": "Get currency pair",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "offset",
+                        "name": "offset",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "limit",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ArbitrageRow"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "replace all Arbitrage rows",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Arbitrage"
+                ],
+                "summary": "replace all Arbitrage rows",
+                "parameters": [
+                    {
+                        "description": "arbitrage params",
+                        "name": "arbitrageRows",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ArbitrageRow"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/p2p/markets/all": {
             "get": {
                 "description": "Get all P2P markets",
@@ -218,8 +297,31 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "name": {
+                "nameon": {
                     "type": "string"
+                }
+            }
+        },
+        "models.ArbitrageRow": {
+            "type": "object",
+            "properties": {
+                "buy": {
+                    "type": "number"
+                },
+                "first_pay_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "percent": {
+                    "type": "number"
+                },
+                "second_pay_type": {
+                    "type": "string"
+                },
+                "sell": {
+                    "type": "number"
                 }
             }
         },
