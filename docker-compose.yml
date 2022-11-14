@@ -1,19 +1,41 @@
 version: "3.8"
 services:
   redis:
-    image: redis:6.2-alpine
+    image: redis:7.0-alpine
     restart: always
     ports:
       - 6379:6379
     env_file:
       - .env
-  parser:
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    depends_on:
-      - redis
+  db:
+    image: postgres:latest
+    volumes:
+      - pgdata:/var/lib/postgresql/data/
     ports:
-    - ${BACKEND_PORT}:${BACKEND_PORT}
+      - "5432:5432"
     env_file:
       - .env
+  pgadmin:
+    image: dpage/pgadmin4
+    depends_on:
+      - db
+    env_file:
+      - .env
+    volumes:
+      - pg-admin-data:/var/lib/pgadmin
+    ports:
+      - "5051:80"
+  # parser:
+  #   build: 
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   depends_on:
+  #     - redis
+  #     - db
+  #   ports:
+  #   - ${BACKEND_PORT}:${BACKEND_PORT}
+  #   env_file:
+  #     - .env
+volumes:
+  pgdata:
+  pg-admin-data:
