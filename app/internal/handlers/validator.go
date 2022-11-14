@@ -13,6 +13,7 @@ var validate = validator.New()
 // ValidateBody validate body from request
 func ValidateBody(scheme interface{}, c *fiber.Ctx) error {
 	if err := c.BodyParser(scheme); err != nil {
+		print(err.Error())
 		return customErrors.ValidationError
 
 	}
