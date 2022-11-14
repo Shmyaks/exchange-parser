@@ -2,6 +2,8 @@
 package okx
 
 import (
+	"strconv"
+
 	"github.com/Shmyaks/exchange-parser-server/app/internal/data/okx/schemes"
 	"github.com/Shmyaks/exchange-parser-server/app/internal/models"
 	"github.com/Shmyaks/exchange-parser-server/app/internal/models/filters"
@@ -37,15 +39,16 @@ func (d *P2PData) GetOrdersAPI(filter filters.P2PFilter) ([]models.P2POrder, err
 	ordersScheme := scheme.Data.Buy
 
 	query := map[string]string{
-		"userType":          "all",
-		"paymentMethod":     mapAliasPayMethod[filter.PayType],
-		"showTrade":         "false",
-		"showFollow":        "false",
-		"showAlreadyTraded": "false",
-		"isAbleFilter":      "false",
-		"baseCurrency":      string(filter.CryptoCurrency),
-		"quoteCurrency":     string(filter.Fiat),
-		"side":              string(mapAliasTradeType[filter.TradeType]),
+		"userType":               "all",
+		"paymentMethod":          mapAliasPayMethod[filter.PayType],
+		"showTrade":              "false",
+		"showFollow":             "false",
+		"showAlreadyTraded":      "false",
+		"isAbleFilter":           "false",
+		"baseCurrency":           string(filter.CryptoCurrency),
+		"quoteCurrency":          string(filter.Fiat),
+		"side":                   string(mapAliasTradeType[filter.TradeType]),
+		"quoteMinAmountPerOrder": strconv.Itoa(filter.MinAmount),
 	}
 	resp, err := d.client.NewRequest().SetQueryParams(query).Get(p2pURL)
 	if err != nil {
@@ -64,14 +67,16 @@ func (d *P2PData) GetOrdersAPI(filter filters.P2PFilter) ([]models.P2POrder, err
 		ordersScheme = scheme.Data.Sell
 	}
 	for _, info := range ordersScheme {
-		println(info.Price)
-		orders = append(orders, *models.NewP2POrder(
-			info.CryptoCurrency,
-			info.Fiat,
-			info.NickName,
-			info.Price,
-			d.marketIDP2P,
-			filter.PayType))
+		orders = append(
+			orders, *models.NewP2POrder(
+				info.CryptoCurrency,
+				info.Fiat,
+				info.NickName,
+				info.Price,
+				d.marketIDP2P,
+				filter.PayType,
+			),
+		)
 	}
 	return orders, nil
 }
@@ -81,4 +86,8 @@ func (d *P2PData) GetPayMethods() map[models.Fiat][]models.PayMethod {
 	mp := make(map[models.Fiat][]models.PayMethod)
 	mp[models.RUB] = []models.PayMethod{models.Tinkoff, models.Raif, models.Rosbank, models.QIWI}
 	return mp
+}
+
+func (d *P2PData) GetPayMethodAlias() error {
+	return nil
 }

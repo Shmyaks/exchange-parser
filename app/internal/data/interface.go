@@ -12,6 +12,7 @@ type P2P interface {
 	GetOrdersAPI(filters.P2PFilter) ([]models.P2POrder, error)
 	GetPayMethods() map[models.Fiat][]models.PayMethod
 	GetMarketID() *markets.P2PMarket
+	GetPayMethodAlias() error
 }
 
 // SPOT interface for data packages

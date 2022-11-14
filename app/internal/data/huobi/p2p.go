@@ -3,6 +3,7 @@ package huobi
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/Shmyaks/exchange-parser-server/app/internal/data/huobi/schemes"
 	"github.com/Shmyaks/exchange-parser-server/app/internal/models"
@@ -13,7 +14,8 @@ import (
 )
 
 const (
-	p2pURL string = "https://otc-api.trygofast.com/v1/data/trade-market"
+	p2pURL      string = "https://otc-api.trygofast.com/v1/data/trade-market"
+	p2pAliasURL string = "https://otc-api.trygofast.com/v1/data/config-list"
 )
 
 // P2PData struct
@@ -47,7 +49,7 @@ func (d *P2PData) GetOrdersAPI(filter filters.P2PFilter) ([]models.P2POrder, err
 		"blockType":    "general",
 		"online":       "1",
 		"range":        "0",
-		"amount":       "",
+		"amount":       strconv.Itoa(filter.MinAmount),
 		"isThumbsUp":   "false",
 		"isMerchant":   "false",
 		"isTraded":     "false",
@@ -66,7 +68,12 @@ func (d *P2PData) GetOrdersAPI(filter filters.P2PFilter) ([]models.P2POrder, err
 		return nil, nil
 	}
 	for _, info := range scheme.Data {
-		orders = append(orders, *models.NewP2POrder(mapAliasToCurrency[strconv.Itoa(int(info.CoinID))], mapAliasToFiat[strconv.Itoa(int(info.Currency))], info.UserName, info.Price, d.marketIDP2P, filter.PayType))
+		orders = append(
+			orders, *models.NewP2POrder(
+				mapAliasToCurrency[strconv.Itoa(int(info.CoinID))], mapAliasToFiat[strconv.Itoa(int(info.Currency))],
+				info.UserName, info.Price, d.marketIDP2P, filter.PayType,
+			),
+		)
 	}
 	return orders, nil
 }
@@ -74,6 +81,37 @@ func (d *P2PData) GetOrdersAPI(filter filters.P2PFilter) ([]models.P2POrder, err
 // GetPayMethods get P2P PayMethods for bybit
 func (d *P2PData) GetPayMethods() map[models.Fiat][]models.PayMethod {
 	mp := make(map[models.Fiat][]models.PayMethod)
-	mp[models.RUB] = []models.PayMethod{models.Tinkoff, models.Raif, models.Rosbank, models.QIWI}
+	mp[models.RUB] = []models.PayMethod{
+		models.Tinkoff, models.Raif, models.Rosbank, models.QIWI, models.Payeer, models.AdvCash, models.YOUMoney,
+	}
+	mp[models.USD] = []models.PayMethod{models.AdvCash, models.Payeer, models.Zelle, models.Wise}
+	mp[models.TRY] = []models.PayMethod{models.DenizBank, models.VakifBank, models.Akbank}
 	return mp
+}
+
+func (d *P2PData) GetPayMethodAlias() error {
+	var scheme schemes.AliasJSONScheme
+	mp := make(map[models.PayMethod]string)
+	query := map[string]string{
+		"type": "currency,marketQuery,pay,allCountry,coin",
+	}
+	resp, err := d.client.NewRequest().SetQueryParams(query).Get(p2pAliasURL)
+	if err != nil {
+		return err
+	}
+	if !resp.IsSuccess() {
+		return nil
+	}
+	err = resp.Into(&scheme)
+	for _, info := range scheme.Data.PayMethod {
+		mp[models.PayMethod(
+			strings.ToUpper(
+				strings.ReplaceAll(
+					info.Name, " ", "",
+				),
+			),
+		)] = strconv.Itoa(info.PayMethodID)
+	}
+	mapAliasPayMethod = mp
+	return nil
 }
