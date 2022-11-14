@@ -3,7 +3,9 @@ package service
 
 import (
 	"sync"
+	"time"
 
+	"github.com/Shmyaks/exchange-parser-server/app/config"
 	"github.com/Shmyaks/exchange-parser-server/app/internal/models"
 	"github.com/Shmyaks/exchange-parser-server/app/internal/models/filters"
 	"github.com/Shmyaks/exchange-parser-server/app/internal/models/markets"
@@ -20,7 +22,7 @@ func NewP2PService(P2PRepository repository.P2PRepository) *P2PService {
 	return &P2PService{P2PRepository: P2PRepository}
 }
 
-// Parse orders
+// Parse ..
 func (s *P2PService) Parse(market markets.P2PMarket, filter filters.P2PFilter) *models.P2PPair {
 	pairsBuys, _ := s.P2PRepository.GetAllFromData(market, *filter.SetTradeType(filters.Buy))
 	pairsSells, _ := s.P2PRepository.GetAllFromData(market, *filter.SetTradeType(filters.Sell))
@@ -31,8 +33,10 @@ func (s *P2PService) Parse(market markets.P2PMarket, filter filters.P2PFilter) *
 	if len(pairsSells) != 0 {
 		sellPrice = pairsSells[0].Price
 	}
-	return models.NewP2PPair(filter.CryptoCurrency,
-		filter.Fiat, buyPrice, sellPrice, market, filter.PayType)
+	return models.NewP2PPair(
+		filter.CryptoCurrency,
+		filter.Fiat, buyPrice, sellPrice, market, filter.PayType,
+	)
 }
 
 // ParseAll orders
@@ -43,18 +47,19 @@ func (s *P2PService) ParseAll(market markets.P2PMarket) error {
 	}
 
 	pairsAllCurrencies := [len(filters.P2PCurrencies)][]models.P2PPair{}
-
 	parseFunc := func(
 		pairs *[]models.P2PPair,
 		wg *sync.WaitGroup,
 		mu *sync.Mutex,
 		payMethod models.PayMethod,
 		fiat models.Fiat,
-		currency models.CryptoCurrency) {
+		currency models.CryptoCurrency,
+	) {
 
 		defer wg.Done()
-		println(mu, string(currency), fiat, payMethod, wg)
-		pair := s.Parse(market, *filters.NewP2PFilter(currency, fiat, payMethod))
+		pair := s.Parse(
+			market, *filters.NewP2PFilter(currency, fiat, payMethod, fiat.GetMinAmount(), config.Env.MinOrders),
+		)
 		mu.Lock()
 		*pairs = append(*pairs, *pair)
 		mu.Unlock()
@@ -67,6 +72,7 @@ func (s *P2PService) ParseAll(market markets.P2PMarket) error {
 			for _, payMethod := range payMethods {
 				wg.Add(1)
 				go parseFunc(&pairsAllCurrencies[i], &wg, &mu, payMethod, fiat, currency)
+				time.Sleep(time.Millisecond * 300)
 			}
 		}
 	}

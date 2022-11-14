@@ -32,6 +32,6 @@ func (s *SPOTService) Get(market markets.SPOTMarket, currencyPairName models.Cur
 }
 
 // GetAll orders from Cache
-func (s *SPOTService) GetAll(market markets.SPOTMarket) []*models.CurrencyPair {
+func (s *SPOTService) GetAll(market markets.SPOTMarket) []models.CurrencyPair {
 	return s.SPOTRepository.GetAllFromCache(market)
 }
