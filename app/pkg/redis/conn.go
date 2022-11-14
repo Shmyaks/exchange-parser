@@ -1,7 +1,7 @@
-// Package redis ...
-package redis
+// Package pkg ...
+package pkg
 
-import "github.com/go-redis/redis"
+import "github.com/go-redis/redis/v8"
 
 // Connection struct
 type Connection struct {
@@ -10,14 +10,12 @@ type Connection struct {
 
 // NewConnection create redis pool connections
 func NewConnection(redisServer string) *Connection {
-	client := redis.NewClient(&redis.Options{
-		Addr:     redisServer,
-		Password: "", //
-		PoolSize: 100,
-	})
-	err := client.Ping().Err()
-	if client.Ping().Err() != nil {
-		panic(err)
-	}
+	client := redis.NewClient(
+		&redis.Options{
+			Addr:     redisServer,
+			Password: "", //
+			PoolSize: 100,
+		},
+	)
 	return &Connection{Pool: client}
 }
