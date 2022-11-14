@@ -1,0 +1,2 @@
+-- create "arbitrage" table
+CREATE TABLE "public"."arbitrage" ("id" serial NOT NULL, "asset" character varying(32) NOT NULL, "fiat" character varying(8) NOT NULL, "buy" double precision NOT NULL, "first_pay_type" character varying(32) NOT NULL, "sell" double precision NOT NULL, "second_pay_type" character varying(32) NOT NULL, "percent" double precision NOT NULL, "market_id" integer NOT NULL, PRIMARY KEY ("id"));
