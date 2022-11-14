@@ -1,6 +1,7 @@
 package models
 
 import (
+	"github.com/Shmyaks/exchange-parser-server/app/config"
 	"github.com/Shmyaks/exchange-parser-server/app/internal/models/markets"
 )
 
@@ -19,8 +20,6 @@ type BaseCurrencyPair struct {
 	SecondAsset CryptoCurrency     `json:"secondAsset"`
 	MarketID    markets.SPOTMarket `json:"marketID"`
 }
-
-
 
 // NewBaseCurrencyPair fabric
 func NewBaseCurrencyPair(firstAsset CryptoCurrency, secondAsset CryptoCurrency, marketID markets.SPOTMarket) *BaseCurrencyPair {
@@ -48,3 +47,16 @@ const (
 	TRY Fiat = "TRY"
 	USZ Fiat = "USZ"
 )
+
+// GetMinAmount get min amount from .env file
+func (f *Fiat) GetMinAmount() int {
+	switch *f {
+	case RUB:
+		return config.Env.MinAmountRUB
+	case USD:
+		return config.Env.MinAmounUSD
+	case TRY:
+		return config.Env.MinAmoutTRY
+	}
+	panic("Error with min amount for this fiat")
+}

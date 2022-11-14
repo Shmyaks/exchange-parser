@@ -1,8 +1,6 @@
 package models
 
 import (
-	"fmt"
-
 	"github.com/Shmyaks/exchange-parser-server/app/internal/models/markets"
 )
 
@@ -23,12 +21,12 @@ func NewP2POrder(firstAsset CryptoCurrency, secondAsset Fiat, userName string, p
 
 // P2PPair struct
 type P2PPair struct {
-	FirstAsset  CryptoCurrency    `json:"firstAsset"`
-	SecondAsset Fiat              `json:"secondAsset"`
-	BuyPrice    string            `json:"buy"`
-	SellPrice   string            `json:"sell"`
-	PayType     PayMethod         `json:"payType" `
-	MarketID    markets.P2PMarket `json:"marketId"`
+	FirstAsset  CryptoCurrency    `json:"firstAsset" dataframe:"FirstAsset,string"`
+	SecondAsset Fiat              `json:"secondAsset" dataframe:",string"`
+	BuyPrice    string            `json:"buy" dataframe:",string"`
+	SellPrice   string            `json:"sell" dataframe:",string"`
+	PayType     PayMethod         `json:"payType" dataframe:",string"`
+	MarketID    markets.P2PMarket `json:"marketId" dataframe:"marketID,int"`
 }
 
 // NewP2PPair fabric for P2PPair
@@ -39,8 +37,4 @@ func NewP2PPair(firstAsset CryptoCurrency, secondAsset Fiat, buyPrice string, se
 // GetFullName get full name P2PPair
 func (p *P2PPair) GetFullName() string {
 	return string(p.FirstAsset) + "/P2P" + string(p.SecondAsset)
-}
-
-func (p *P2PPair) String() string {
-	return fmt.Sprintf("%s %s buy: %s sell: %s %s", string(p.FirstAsset), string(p.SecondAsset), p.BuyPrice, p.SellPrice, string(p.PayType))
 }
