@@ -1,36 +1,38 @@
 package repository
 
 import (
-	data "github.com/Shmyaks/exchange-parser-server/app/internal/data"
+	"context"
+
+	"github.com/Shmyaks/exchange-parser-server/app/internal/data"
 	"github.com/Shmyaks/exchange-parser-server/app/internal/models"
 	"github.com/Shmyaks/exchange-parser-server/app/internal/models/markets"
-	"github.com/Shmyaks/exchange-parser-server/app/pkg/redis"
+	pkg "github.com/Shmyaks/exchange-parser-server/app/pkg/redis"
 
 	jsoniter "github.com/json-iterator/go"
 )
 
 // SPOTRepository struct
 type SPOTRepository struct {
-	Datas           []data.SPOT
-	redisConnection redis.Connection
+	datas           []data.SPOT
+	redisConnection pkg.Connection
 }
 
 // NewSPOTRepository fabric for CurrencyRepository
-func NewSPOTRepository(curencyDatas []data.SPOT, redisConnection redis.Connection) *SPOTRepository {
+func NewSPOTRepository(curencyDatas []data.SPOT, redisConnection pkg.Connection) *SPOTRepository {
 	mpCurrency := make([]data.SPOT, len(curencyDatas))
 	for _, curencyData := range curencyDatas {
 		mpCurrency[*curencyData.GetMarketID()-1] = curencyData
 	}
 
-	return &SPOTRepository{Datas: mpCurrency, redisConnection: redisConnection}
+	return &SPOTRepository{datas: mpCurrency, redisConnection: redisConnection}
 }
 
 // GetData get spot Data of repository
 func (r *SPOTRepository) GetData(m markets.SPOTMarket) data.SPOT {
-	if len(r.Datas) <= int(m)-1 {
+	if len(r.datas) <= int(m)-1 {
 		panic("Datas not have this market")
 	}
-	return r.Datas[m-1]
+	return r.datas[m-1]
 }
 
 // GetPairNamesFromData method for get P2POrders from Data
@@ -46,7 +48,7 @@ func (r *SPOTRepository) GetAllFromData(market markets.SPOTMarket) ([]models.Cur
 // Set method: SetCurrencyPair pair to Redis
 func (r *SPOTRepository) Set(market markets.SPOTMarket, pair models.CurrencyPair) error {
 	bs, _ := jsoniter.Marshal(&pair)
-	cmd := r.redisConnection.Pool.HSet(market.GetName(), string(pair.CurencyPairName), bs)
+	cmd := r.redisConnection.Pool.HSet(context.Background(), market.GetName(), string(pair.CurencyPairName), bs)
 	return cmd.Err()
 }
 
@@ -57,26 +59,26 @@ func (r *SPOTRepository) SetMany(market markets.SPOTMarket, pairs []models.Curre
 		bs, _ := jsoniter.Marshal(&pair)
 		mp[string(pair.CurencyPairName)] = bs
 	}
-	cmd := r.redisConnection.Pool.HMSet(market.GetName(), mp)
+	cmd := r.redisConnection.Pool.HMSet(context.Background(), market.GetName(), mp)
 	return cmd.Err()
 }
 
 // GetFromCache method: Set P2Ppair to Redis
 func (r *SPOTRepository) GetFromCache(market markets.SPOTMarket, currencyPairName models.CurencyPairName) *models.CurrencyPair {
 	pair := new(models.CurrencyPair)
-	str, _ := r.redisConnection.Pool.HGet(market.GetName(), string(currencyPairName)).Result()
+	str, _ := r.redisConnection.Pool.HGet(context.Background(), market.GetName(), string(currencyPairName)).Result()
 	_ = jsoniter.UnmarshalFromString(str, &pair)
 	return pair
 }
 
 // GetAllFromCache SPOT pairs from market
-func (r *SPOTRepository) GetAllFromCache(market markets.SPOTMarket) []*models.CurrencyPair {
-	pairs := []*models.CurrencyPair{}
-	mp, _ := r.redisConnection.Pool.HGetAll(market.GetName()).Result()
+func (r *SPOTRepository) GetAllFromCache(market markets.SPOTMarket) []models.CurrencyPair {
+	pairs := []models.CurrencyPair{}
+	mp, _ := r.redisConnection.Pool.HGetAll(context.Background(), market.GetName()).Result()
 	for _, mp := range mp {
 		pair := new(models.CurrencyPair)
-		_ = jsoniter.UnmarshalFromString(mp, &pair)
-		pairs = append(pairs, pair)
+		_ = jsoniter.UnmarshalFromString(mp, pair)
+		pairs = append(pairs, *pair)
 	}
 	return pairs
 }
